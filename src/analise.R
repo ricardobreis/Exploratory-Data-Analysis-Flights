@@ -86,6 +86,7 @@ flights$aeroporto_destino_nome        <- iconv(flights$aeroporto_destino_nome, "
 flights$aeroporto_destino_pais        <- iconv(flights$aeroporto_destino_pais, "latin1", "UTF-8")
 flights$aeroporto_destino_continente  <- iconv(flights$aeroporto_destino_continente, "latin1", "UTF-8")
 flights$grupo_voo                     <- iconv(flights$grupo_voo, "latin1", "UTF-8")
+flights$natureza                      <- iconv(flights$natureza, "latin1", "UTF-8")
 
 # Transforming character columns in factor
 flights$empresa_nome                  <- factor(flights$empresa_nome)
@@ -96,5 +97,19 @@ flights$aeroporto_destino_nome        <- factor(flights$aeroporto_destino_nome)
 flights$aeroporto_destino_pais        <- factor(flights$aeroporto_destino_pais)
 flights$aeroporto_destino_continente  <- factor(flights$aeroporto_destino_continente)
 flights$grupo_voo                     <- factor(flights$grupo_voo)
+flights$natureza                      <- factor(flights$natureza)
 
-levels(flights$aeroporto_destino_pais)
+levels(flights$grupo_voo)
+
+# Filtering data
+brazilian_domestic_flights <- subset(flights, empresa_nacionalidade == "BRASILEIRA" & natureza == "DOMÉSTICA" & grupo_voo != "IMPRODUTIVO" & empresa_sigla %in% c("AZU", "GLO", "TAM"))
+
+
+# Análise -----------------------------------------------------------------
+
+decolagens_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE))
+
+ggplot(decolagens_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line()
