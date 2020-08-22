@@ -28,7 +28,7 @@ rm(list = ls())
 
 # Leitura de Dados --------------------------------------------------------
 
-flights <- read.csv("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/resumo_anual_2020.csv", encoding="UTF-8", sep=";")
+flights <- read.csv("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/resumo_anual_2020.csv", encoding="UTF-8", sep=";", stringsAsFactors = T)
 glimpse(flights)
 head(flights)
 summary(flights)
@@ -77,6 +77,24 @@ flights <- rename(flights, payload = PAYLOAD)
 flights <- rename(flights, horas_voadas = HORAS.VOADAS)
 flights <- rename(flights, bagagem_km = BAGAGEM..KG.)
 
+# Correcting encoding
+flights$empresa_nome                  <- iconv(flights$empresa_nome, "latin1", "UTF-8")
+flights$aeroporto_origem_nome         <- iconv(flights$aeroporto_origem_nome, "latin1", "UTF-8")
+flights$aeroporto_origem_pais         <- iconv(flights$aeroporto_origem_pais, "latin1", "UTF-8")
+flights$aeroporto_origem_continente   <- iconv(flights$aeroporto_origem_continente, "latin1", "UTF-8")
+flights$aeroporto_destino_nome        <- iconv(flights$aeroporto_destino_nome, "latin1", "UTF-8")
+flights$aeroporto_destino_pais        <- iconv(flights$aeroporto_destino_pais, "latin1", "UTF-8")
+flights$aeroporto_destino_continente  <- iconv(flights$aeroporto_destino_continente, "latin1", "UTF-8")
+flights$grupo_voo                     <- iconv(flights$grupo_voo, "latin1", "UTF-8")
 
+# Transforming character columns in factor
+flights$empresa_nome                  <- factor(flights$empresa_nome)
+flights$aeroporto_origem_nome         <- factor(flights$aeroporto_origem_nome)
+flights$aeroporto_origem_pais         <- factor(flights$aeroporto_origem_pais)
+flights$aeroporto_origem_continente   <- factor(flights$aeroporto_origem_continente)
+flights$aeroporto_destino_nome        <- factor(flights$aeroporto_destino_nome)
+flights$aeroporto_destino_pais        <- factor(flights$aeroporto_destino_pais)
+flights$aeroporto_destino_continente  <- factor(flights$aeroporto_destino_continente)
+flights$grupo_voo                     <- factor(flights$grupo_voo)
 
-#flights$ <- iconv(pedidos2018$dc_resposta, "latin1", "UTF-8")
+levels(flights$aeroporto_destino_pais)
