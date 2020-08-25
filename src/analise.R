@@ -28,7 +28,7 @@ rm(list = ls())
 
 # Leitura de Dados --------------------------------------------------------
 
-flights <- read.csv("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/resumo_anual_2020.csv", encoding="UTF-8", sep=";", stringsAsFactors = T)
+flights <- read.csv("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/resumo_anual_2020.csv", encoding="UTF-8", sep=";")
 glimpse(flights)
 head(flights)
 summary(flights)
@@ -101,15 +101,113 @@ flights$natureza                      <- factor(flights$natureza)
 
 levels(flights$grupo_voo)
 
+# Formating horas_voadas
+flights$horas_voadas <- gsub(",", ".", flights$horas_voadas)
+flights$horas_voadas <- as.numeric(flights$horas_voadas,digits=15)
+
+
 # Filtering data
 brazilian_domestic_flights <- subset(flights, empresa_nacionalidade == "BRASILEIRA" & natureza == "DOMÉSTICA" & grupo_voo != "IMPRODUTIVO" & empresa_sigla %in% c("AZU", "GLO", "TAM"))
 
 
 # Análise -----------------------------------------------------------------
 
+# Decolagens por mês por companhia
 decolagens_mes_companhia <- brazilian_domestic_flights %>%
   group_by(empresa_sigla, mes) %>%
   summarise(n = sum(decolagens, na.rm = TRUE))
 
 ggplot(decolagens_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
   geom_line()
+
+# Passageiros pagos por mês por companhia
+passageiros_pagos_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(passageiros_pagos, na.rm = TRUE))
+
+ggplot(passageiros_pagos_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Passageiros gratis por mês por companhia
+passageiros_gratis_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(passageiros_gratis, na.rm = TRUE))
+
+ggplot(passageiros_gratis_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Passageiros total por mês por companhia
+brazilian_domestic_flights$passageiros_total <- brazilian_domestic_flights$passageiros_pagos + brazilian_domestic_flights$passageiros_gratis
+
+passageiros_total_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(passageiros_total, na.rm = TRUE))
+
+ggplot(passageiros_total_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Carga paga (em kg) por mês por companhia
+carga_paga_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(carga_paga_kg, na.rm = TRUE))
+
+ggplot(carga_paga_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Carga gratis (em kg) por mês por companhia
+carga_gratis_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(carga_gratis_kg, na.rm = TRUE))
+
+ggplot(carga_gratis_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Combustível (em litros) por mês por companhia
+combustivel_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(combustivel_litros, na.rm = TRUE))
+
+ggplot(combustivel_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Distância voada (em kg) por mês por companhia
+distancia_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(distancia_voada_km, na.rm = TRUE))
+
+ggplot(distancia_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# ASK por mês por companhia
+ask_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(ask, na.rm = TRUE))
+
+ggplot(ask_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# RPK por mês por companhia
+rpk_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(rpk, na.rm = TRUE))
+
+ggplot(rpk_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+# Horas voadas por mês por companhia
+horas_voadas_mes_companhia <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, mes) %>%
+  summarise(n = sum(horas_voadas, na.rm = TRUE))
+
+ggplot(horas_voadas_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
