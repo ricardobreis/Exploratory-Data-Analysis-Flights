@@ -241,7 +241,35 @@ breaks = c(500, 1000, 5000, 10000, 20000, 50000)
 tm_shape(uf_decolagens) +
   
   #Utiliza as cores para montar o mapa de calor baseado na coluna n
-  tm_fill(col = "n", title = titulo, palette = "BuGn", breaks = breaks) +
+  tm_fill(col = "n", title = titulo, breaks = breaks) +
   
   #Insere bordas para facilitar a visualização das áreas
-  tm_borders() 
+  tm_borders(alpha = 0.2) 
+  
+  #tm_layout(bg.color = "lightblue") + 
+  
+  #tm_layout(frame = FALSE)
+
+# Decolagens por estado por mes
+decolagens_estado_mes <- brazilian_domestic_flights %>%
+  group_by(aeroporto_origem_uf, mes) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE)) 
+
+uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrev_state" = "aeroporto_origem_uf"))
+
+#Seta o título do gráfico
+titulo = "Decolagens por UF por Mês"
+
+#Seta o os valores das quebras na legenda
+breaks = c(500, 1000, 5000, 10000, 20000, 50000) 
+
+#Primeira layer = Mapa ddo Brasil
+tm_shape(uf_mes_decolagens) +
+  
+  #Utiliza as cores para montar o mapa de calor baseado na coluna n
+  tm_fill(col = "n", title = titulo, breaks = breaks) +
+  
+  #Insere bordas para facilitar a visualização das áreas
+  tm_borders(alpha = 0.2) +
+  
+  tm_facets(by = "mes")
