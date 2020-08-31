@@ -19,6 +19,9 @@ library(ggplot2)
 library(plotly)
 library(wordcloud2)
 library(forcats)
+library(geobr)
+library(sf)
+library(tmap)
 
 # Limpando o console.
 cat("\014") 
@@ -211,3 +214,34 @@ horas_voadas_mes_companhia <- brazilian_domestic_flights %>%
 ggplot(horas_voadas_mes_companhia, aes(x = mes, y = n, color = empresa_sigla)) +
   geom_line() +
   scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+
+# Análise Espacial --------------------------------------------------------
+
+uf <- read_state(code_state="all", year=2018)
+plot(uf) # Plota todas as colunas
+plot(st_geometry(uf)) # Plota apenas a geometria
+head(uf)
+class(uf$geom)
+
+# Decolagens por estado
+decolagens_estado <- brazilian_domestic_flights %>%
+  group_by(aeroporto_origem_uf) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE)) 
+
+uf_decolagens <- inner_join(uf, decolagens_estado, by= c("abbrev_state" = "aeroporto_origem_uf"))
+
+#Seta o título do gráfico
+titulo = "Decolagens por UF"
+
+#Seta o os valores das quebras na legenda
+breaks = c(500, 1000, 5000, 10000, 20000, 50000) 
+
+#Primeira layer = Mapa ddo Brasil
+tm_shape(uf_decolagens) +
+  
+  #Utiliza as cores para montar o mapa de calor baseado na coluna n
+  tm_fill(col = "n", title = titulo, palette = "BuGn", breaks = breaks) +
+  
+  #Insere bordas para facilitar a visualização das áreas
+  tm_borders() 
