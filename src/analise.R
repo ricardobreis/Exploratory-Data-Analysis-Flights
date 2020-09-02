@@ -112,6 +112,9 @@ flights$horas_voadas <- as.numeric(flights$horas_voadas,digits=15)
 # Filtering data
 brazilian_domestic_flights <- subset(flights, empresa_nacionalidade == "BRASILEIRA" & natureza == "DOMÉSTICA" & grupo_voo != "IMPRODUTIVO" & empresa_sigla %in% c("AZU", "GLO", "TAM"))
 
+# Changing months label
+brazilian_domestic_flights$mes <- factor(brazilian_domestic_flights$mes, levels = c(1, 2, 3, 4, 5, 6, 7), labels = c("Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"))
+
 
 # Análise -----------------------------------------------------------------
 
@@ -272,4 +275,7 @@ tm_shape(uf_mes_decolagens) +
   #Insere bordas para facilitar a visualização das áreas
   tm_borders(alpha = 0.2) +
   
-  tm_facets(by = "mes")
+  tm_facets(by = "mes", free.coords = FALSE)
+
+# Gera o shapefile do dataframe sf
+st_write(uf_mes_decolagens, "~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/a.shp")
