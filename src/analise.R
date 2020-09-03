@@ -113,7 +113,7 @@ flights$horas_voadas <- as.numeric(flights$horas_voadas,digits=15)
 brazilian_domestic_flights <- subset(flights, empresa_nacionalidade == "BRASILEIRA" & natureza == "DOMÉSTICA" & grupo_voo != "IMPRODUTIVO" & empresa_sigla %in% c("AZU", "GLO", "TAM"))
 
 # Changing months label
-brazilian_domestic_flights$mes <- factor(brazilian_domestic_flights$mes, levels = c(1, 2, 3, 4, 5, 6, 7), labels = c("Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"))
+brazilian_domestic_flights$mes_factor <- factor(brazilian_domestic_flights$mes, levels = c(1, 2, 3, 4, 5, 6, 7), labels = c("Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"))
 
 
 # Análise -----------------------------------------------------------------
@@ -234,19 +234,8 @@ decolagens_estado <- brazilian_domestic_flights %>%
 
 uf_decolagens <- inner_join(uf, decolagens_estado, by= c("abbrev_state" = "aeroporto_origem_uf"))
 
-#Seta o título do gráfico
-titulo = "Decolagens por UF"
-
-#Seta o os valores das quebras na legenda
-breaks = c(500, 1000, 5000, 10000, 20000, 50000) 
-
-#Primeira layer = Mapa ddo Brasil
 tm_shape(uf_decolagens) +
-  
-  #Utiliza as cores para montar o mapa de calor baseado na coluna n
-  tm_fill(col = "n", title = titulo, breaks = breaks) +
-  
-  #Insere bordas para facilitar a visualização das áreas
+  tm_fill(col = "n", title = "Decolagens por UF", breaks = c(500, 1000, 5000, 10000, 20000, 50000)) +
   tm_borders(alpha = 0.2) 
   
   #tm_layout(bg.color = "lightblue") + 
@@ -260,22 +249,51 @@ decolagens_estado_mes <- brazilian_domestic_flights %>%
 
 uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrev_state" = "aeroporto_origem_uf"))
 
-#Seta o título do gráfico
-titulo = "Decolagens por UF por Mês"
-
-#Seta o os valores das quebras na legenda
-breaks = c(500, 1000, 5000, 10000, 20000, 50000) 
-
-#Primeira layer = Mapa ddo Brasil
 tm_shape(uf_mes_decolagens) +
-  
-  #Utiliza as cores para montar o mapa de calor baseado na coluna n
-  tm_fill(col = "n", title = titulo, breaks = breaks) +
-  
-  #Insere bordas para facilitar a visualização das áreas
+  tm_fill(col = "n", title = "Decolagens por UF por Mês", breaks = c(500, 1000, 5000, 10000, 20000, 50000)) +
   tm_borders(alpha = 0.2) +
-  
   tm_facets(by = "mes", free.coords = FALSE)
+
+# Decolagens por estado por mes
+decolagens_estado_mes <- brazilian_domestic_flights %>%
+  group_by(aeroporto_origem_uf, mes) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE)) 
+
+uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrev_state" = "aeroporto_origem_uf"))
+
+tm_shape(uf_mes_decolagens) +
+  tm_fill(col = "n", title = "Decolagens por UF por Mês", breaks = c(500, 1000, 5000, 10000, 20000, 50000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes", free.coords = FALSE)
+
+# Decolagens por estado por mes Gol
+decolagens_estado_mes_gol <- brazilian_domestic_flights %>%
+  filter(empresa_sigla == "GLO") %>%
+  group_by(aeroporto_origem_uf, mes_factor) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE)) 
+
+uf_mes_decolagens_gol <- inner_join(uf, decolagens_estado_mes_gol, by= c("abbrev_state" = "aeroporto_origem_uf"))
+
+tm_shape(uf_mes_decolagens_gol) +
+  tm_fill(col = "n", title = "Decolagens por UF por Mês - Gol", breaks = c(50, 100, 500, 1000, 5000, 10000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes_factor", free.coords = FALSE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Gera o shapefile do dataframe sf
 st_write(uf_mes_decolagens, "~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/a.shp")
