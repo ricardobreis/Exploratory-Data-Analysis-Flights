@@ -22,6 +22,8 @@ library(forcats)
 library(geobr)
 library(sf)
 library(tmap)
+library(RColorBrewer)
+display.brewer.all()
 
 # Limpando o console.
 cat("\014") 
@@ -279,7 +281,31 @@ tm_shape(uf_mes_decolagens_gol) +
   tm_borders(alpha = 0.2) +
   tm_facets(by = "mes_factor", free.coords = FALSE)
 
+# Decolagens por estado por mes Latam
+decolagens_estado_mes_tam <- brazilian_domestic_flights %>%
+  filter(empresa_sigla == "TAM") %>%
+  group_by(aeroporto_origem_uf, mes_factor) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE)) 
 
+uf_mes_decolagens_tam <- inner_join(uf, decolagens_estado_mes_tam, by= c("abbrev_state" = "aeroporto_origem_uf"))
+
+tm_shape(uf_mes_decolagens_tam) +
+  tm_fill(col = "n", title = "Decolagens por UF por Mês - Latam", breaks = c(50, 100, 500, 1000, 5000, 10000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes_factor", free.coords = FALSE)
+
+# Decolagens por estado por mes Azul
+decolagens_estado_mes_azu <- brazilian_domestic_flights %>%
+  filter(empresa_sigla == "AZU") %>%
+  group_by(aeroporto_origem_uf, mes_factor) %>%
+  summarise(n = sum(decolagens, na.rm = TRUE)) 
+
+uf_mes_decolagens_azu <- inner_join(uf, decolagens_estado_mes_azu, by= c("abbrev_state" = "aeroporto_origem_uf"))
+
+tm_shape(uf_mes_decolagens_azu) +
+  tm_fill(col = "n", title = "Decolagens por UF por Mês - Azul", breaks = c(50, 100, 500, 1000, 5000, 10000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes_factor", free.coords = FALSE)
 
 
 
