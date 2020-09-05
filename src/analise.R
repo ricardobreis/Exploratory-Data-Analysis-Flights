@@ -229,16 +229,23 @@ plot(st_geometry(uf)) # Plota apenas a geometria
 head(uf)
 class(uf$geom)
 
+# Gera o shapefile do dataframe sf
+st_write(uf, "~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/uf.shp")
+
+# Carrega o shapefile
+uf <- st_read("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/uf.shp")
+
 # Decolagens por estado
 decolagens_estado <- brazilian_domestic_flights %>%
   group_by(aeroporto_origem_uf) %>%
   summarise(n = sum(decolagens, na.rm = TRUE)) 
 
-uf_decolagens <- inner_join(uf, decolagens_estado, by= c("abbrev_state" = "aeroporto_origem_uf"))
+uf_decolagens <- inner_join(uf, decolagens_estado, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
 tm_shape(uf_decolagens) +
-  tm_fill(col = "n", title = "Decolagens por UF", breaks = c(500, 1000, 5000, 10000, 20000, 50000)) +
-  tm_borders(alpha = 0.2) 
+  tm_fill(col = "n", title = "Decolagens por UF", breaks = c(0, 500, 1000, 5000, 10000, 20000, 50000)) +
+  tm_borders(alpha = 0.2) +
+  tm_layout(legend.title.size = 1.2, legend.position = c("left", "bottom"), frame = FALSE)
   
   #tm_layout(bg.color = "lightblue") + 
   
@@ -249,10 +256,10 @@ decolagens_estado_mes <- brazilian_domestic_flights %>%
   group_by(aeroporto_origem_uf, mes) %>%
   summarise(n = sum(decolagens, na.rm = TRUE)) 
 
-uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrev_state" = "aeroporto_origem_uf"))
+uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
 tm_shape(uf_mes_decolagens) +
-  tm_fill(col = "n", title = "Decolagens por UF por Mês", breaks = c(500, 1000, 5000, 10000, 20000, 50000)) +
+  tm_fill(col = "n", title = "Decolagens por UF por Mês", breaks = c(0, 500, 1000, 5000, 10000, 20000, 50000)) +
   tm_borders(alpha = 0.2) +
   tm_facets(by = "mes", free.coords = FALSE)
 
@@ -261,10 +268,10 @@ decolagens_estado_mes <- brazilian_domestic_flights %>%
   group_by(aeroporto_origem_uf, mes) %>%
   summarise(n = sum(decolagens, na.rm = TRUE)) 
 
-uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrev_state" = "aeroporto_origem_uf"))
+uf_mes_decolagens <- inner_join(uf, decolagens_estado_mes, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
 tm_shape(uf_mes_decolagens) +
-  tm_fill(col = "n", title = "Decolagens por UF por Mês", breaks = c(500, 1000, 5000, 10000, 20000, 50000)) +
+  tm_fill(col = "n", title = "Decolagens por UF por Mês", breaks = c(0, 500, 1000, 5000, 10000, 20000, 50000)) +
   tm_borders(alpha = 0.2) +
   tm_facets(by = "mes", free.coords = FALSE)
 
@@ -274,12 +281,13 @@ decolagens_estado_mes_gol <- brazilian_domestic_flights %>%
   group_by(aeroporto_origem_uf, mes_factor) %>%
   summarise(n = sum(decolagens, na.rm = TRUE)) 
 
-uf_mes_decolagens_gol <- inner_join(uf, decolagens_estado_mes_gol, by= c("abbrev_state" = "aeroporto_origem_uf"))
+uf_mes_decolagens_gol <- inner_join(uf, decolagens_estado_mes_gol, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
 tm_shape(uf_mes_decolagens_gol) +
-  tm_fill(col = "n", title = "Decolagens por UF por Mês - Gol", breaks = c(50, 100, 500, 1000, 5000, 10000)) +
+  tm_fill(col = "n", title = "Partidas - 2020 (Gol)", breaks = c(0, 50, 100, 500, 1000, 5000, 10000)) +
   tm_borders(alpha = 0.2) +
-  tm_facets(by = "mes_factor", free.coords = FALSE)
+  tm_facets(by = "mes_factor", free.coords = FALSE) +
+  tm_layout(legend.title.size = 1.4)
 
 # Decolagens por estado por mes Latam
 decolagens_estado_mes_tam <- brazilian_domestic_flights %>%
@@ -287,10 +295,10 @@ decolagens_estado_mes_tam <- brazilian_domestic_flights %>%
   group_by(aeroporto_origem_uf, mes_factor) %>%
   summarise(n = sum(decolagens, na.rm = TRUE)) 
 
-uf_mes_decolagens_tam <- inner_join(uf, decolagens_estado_mes_tam, by= c("abbrev_state" = "aeroporto_origem_uf"))
+uf_mes_decolagens_tam <- inner_join(uf, decolagens_estado_mes_tam, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
 tm_shape(uf_mes_decolagens_tam) +
-  tm_fill(col = "n", title = "Decolagens por UF por Mês - Latam", breaks = c(50, 100, 500, 1000, 5000, 10000)) +
+  tm_fill(col = "n", title = "Partidas - 2020 (Latam)", breaks = c(0, 50, 100, 500, 1000, 5000, 10000)) +
   tm_borders(alpha = 0.2) +
   tm_facets(by = "mes_factor", free.coords = FALSE)
 
@@ -300,10 +308,10 @@ decolagens_estado_mes_azu <- brazilian_domestic_flights %>%
   group_by(aeroporto_origem_uf, mes_factor) %>%
   summarise(n = sum(decolagens, na.rm = TRUE)) 
 
-uf_mes_decolagens_azu <- inner_join(uf, decolagens_estado_mes_azu, by= c("abbrev_state" = "aeroporto_origem_uf"))
+uf_mes_decolagens_azu <- inner_join(uf, decolagens_estado_mes_azu, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
 tm_shape(uf_mes_decolagens_azu) +
-  tm_fill(col = "n", title = "Decolagens por UF por Mês - Azul", breaks = c(50, 100, 500, 1000, 5000, 10000)) +
+  tm_fill(col = "n", title = "Partidas - 2020 (Azul)", breaks = c(0, 50, 100, 500, 1000, 5000, 10000)) +
   tm_borders(alpha = 0.2) +
   tm_facets(by = "mes_factor", free.coords = FALSE)
 
