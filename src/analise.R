@@ -305,10 +305,47 @@ tm_shape(uf_mes_decolagens_azu) +
   tm_facets(by = "mes_factor", free.coords = FALSE) +
   tm_layout(legend.title.size = 1.3)
 
+# Passageiros pagos por estado por mes Gol
+passageiros_pagos_estado_mes_gol <- brazilian_domestic_flights %>%
+  filter(empresa_sigla == "GLO") %>%
+  group_by(aeroporto_origem_uf, mes_factor) %>%
+  summarise(n = sum(passageiros_pagos, na.rm = TRUE)) 
 
+uf_mes_passageiros_pagos_gol <- inner_join(uf, passageiros_pagos_estado_mes_gol, by= c("abbrv_s" = "aeroporto_origem_uf"))
 
+tm_shape(uf_mes_passageiros_pagos_gol) +
+  tm_fill(palette = "YlOrRd", col = "n", title = "Passageiros Pagos - Gol", breaks = c(0, 10000, 50000, 100000, 500000, 1000000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes_factor", free.coords = FALSE) +
+  tm_layout(legend.title.size = 1.1)
 
+# Passageiros pagos por estado por mes Latam
+passageiros_pagos_estado_mes_tam <- brazilian_domestic_flights %>%
+  filter(empresa_sigla == "TAM") %>%
+  group_by(aeroporto_origem_uf, mes_factor) %>%
+  summarise(n = sum(passageiros_pagos, na.rm = TRUE)) 
 
+uf_mes_passageiros_pagos_tam <- inner_join(uf, passageiros_pagos_estado_mes_tam, by= c("abbrv_s" = "aeroporto_origem_uf"))
+
+tm_shape(uf_mes_passageiros_pagos_tam) +
+  tm_fill(palette = "YlOrRd", col = "n", title = "Passageiros Pagos - Tam", breaks = c(0, 10000, 50000, 100000, 500000, 1000000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes_factor", free.coords = FALSE) +
+  tm_layout(legend.title.size = 1.1)
+
+# Passageiros pagos por estado por mes Azul
+passageiros_pagos_estado_mes_azu <- brazilian_domestic_flights %>%
+  filter(empresa_sigla == "AZU") %>%
+  group_by(aeroporto_origem_uf, mes_factor) %>%
+  summarise(n = sum(passageiros_pagos, na.rm = TRUE)) 
+
+uf_mes_passageiros_pagos_azu <- inner_join(uf, passageiros_pagos_estado_mes_azu, by= c("abbrv_s" = "aeroporto_origem_uf"))
+
+tm_shape(uf_mes_passageiros_pagos_azu) +
+  tm_fill(palette = "YlOrRd", col = "n", title = "Passageiros Pagos - Azul", breaks = c(0, 10000, 50000, 100000, 500000, 1000000)) +
+  tm_borders(alpha = 0.2) +
+  tm_facets(by = "mes_factor", free.coords = FALSE) +
+  tm_layout(legend.title.size = 1.1)
 
 
 
