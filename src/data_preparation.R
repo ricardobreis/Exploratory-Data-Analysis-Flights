@@ -131,6 +131,23 @@ brazilian_domestic_flights$mes_factor <- factor(brazilian_domestic_flights$mes, 
 # Carrega o shapefile
 uf <- st_read("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/raw/uf.shp")
 
+# Gol, Latam, Azul
+uf_aereas <- brazilian_domestic_flights %>%
+  group_by(empresa_sigla, aeroporto_origem_uf, mes_factor) %>%
+  summarise(decolagens = sum(decolagens, na.rm = TRUE), 
+            passageiros_pagos = sum(passageiros_pagos, na.rm = TRUE),
+            passageiros_gratis = sum(passageiros_gratis, na.rm = TRUE),
+            carga_paga_kg = sum(carga_paga_kg, na.rm = TRUE),
+            carga_gratis_kg = sum(carga_gratis_kg, na.rm = TRUE),
+            ask = sum(ask, na.rm = TRUE),
+            rpk = sum(rpk, na.rm = TRUE),
+            combustivel_litros = sum(combustivel_litros, na.rm = TRUE),
+            assentos = sum(assentos, na.rm = TRUE))
+
+uf_aereas_shp <- inner_join(uf, uf_aereas, by= c("abbrv_s" = "aeroporto_origem_uf"))
+
+st_write(uf_aereas_shp, "~/R-Projetos/Exploratory-Data-Analysis-Flights/data/processed/uf_aereas_shp.shp")
+
 # Gol
 uf_gol <- brazilian_domestic_flights %>%
   filter(empresa_sigla == "GLO") %>%
