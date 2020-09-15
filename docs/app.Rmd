@@ -44,11 +44,17 @@ selectInput(
 selectInput(
   "coluna",
   label = "Selecione a Variável:",
-  choices = c("Decolagens" = "declgns", "Passageiros Pagos" = "pssgrs_p", "Passageiros Grátis" = "pssgrs_g")
+  choices = c("Decolagens" = "declgns", 
+              "Passageiros Pagos" = "pssgrs_p", 
+              "Passageiros Grátis" = "pssgrs_g",
+              "Carga Paga" = "crg_pg_",
+              "Carga Grátis" = "crg_gr_",
+              "ASK" = "ask",
+              "RPK" = "rpk",
+              "Assentos" = "assents")
 )
 
 filtered_map <- reactive({
-  
   subset(uf, emprs_s == input$companhia & ms_fctr == input$mes)
 
 })
@@ -68,27 +74,37 @@ Column {data-width=700}
 
 renderLeaflet({
 
-breaks <- switch( 
-   selected_col(), 
-   "declgns" = c(1, 50, 100, 500, 1000, 5000, Inf), 
-   "pssgrs_p" = c(1000, 50000, 100000, 300000, 500000, 750000, Inf),
-   "pssgrs_g" = c(100, 500, 1000, 5000, 10000, 20000, Inf)
-) 
-
-title <- switch( 
-   selected_col(), 
-   "declgns" = "Decolagens", 
-   "pssgrs_p" = "Passageiros Pagos",
-   "pssgrs_g" = "Passageiros Grátis"
-)
-
-leaflet_map <- tm_shape(filtered_map()) +
+  breaks <- switch( 
+     selected_col(), 
+     "declgns" = c(1, 50, 100, 500, 1000, 5000, Inf), 
+     "pssgrs_p" = c(1000, 50000, 100000, 300000, 500000, 750000, Inf),
+     "pssgrs_g" = c(100, 500, 1000, 5000, 10000, 20000, Inf),
+     "crg_pg_" = c(1000, 50000, 100000, 300000, 500000, 750000, Inf),
+     "crg_gr_" = c(1, 500, 1000, 5000, 10000, 20000, Inf),
+     "ask" = c(1000000, 5000000, 10000000, 50000000, 100000000, 500000000, Inf),
+     "rpk" = c(1000000, 5000000, 10000000, 50000000, 100000000, 500000000, Inf),
+     "assents" = c(100, 50000, 100000, 200000, 300000, 500000, Inf)
+  ) 
   
-  tm_fill(col = selected_col(), title = title, palette = "Blues", breaks = breaks, id = "nam_stt") +
-  tm_borders() +
-  tm_style("cobalt")
+  title <- switch( 
+     selected_col(), 
+     "declgns" = "Decolagens", 
+     "pssgrs_p" = "Passageiros Pagos",
+     "pssgrs_g" = "Passageiros Grátis",
+     "crg_pg_" = "Carga Paga (Kg)",
+     "crg_gr_" = "Carga Grátis (Kg)",
+     "ask" = "ASK",
+     "rpk" = "RPK",
+     "assents" = "Assentos"
+  )
   
-tmap_leaflet(leaflet_map)
+  leaflet_map <- tm_shape(filtered_map()) +
+    
+    tm_fill(col = selected_col(), title = title, palette = "Blues", breaks = breaks, id = "nam_stt") +
+    tm_borders() +
+    tm_style("cobalt")
+    
+  tmap_leaflet(leaflet_map)
 
 })
 
