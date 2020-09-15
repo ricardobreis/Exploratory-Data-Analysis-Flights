@@ -1,0 +1,89 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tmap)
+library(sf)
+library(leaflet)
+library(shiny)
+
+# Carrega o shapefile
+uf <- st_read("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/processed/uf_aereas_shp.shp")
+```
+
+Column {data-width=200 .sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+selectInput(
+  "companhia",
+  label = "Selecione a Companhia Aérea:",
+  choices = c("Azul" = "AZU", "Gol" = "GLO", "Latam" = "TAM")
+)
+
+selectInput(
+  "mes",
+  label = "Selecione o Mês:",
+  choices = c("Jan" = "Jan", "Fev" = "Fev", "Mar" = "Mar", "Abr" = "Abr", "Mai" = "Mai", "Jun" = "Jun", "Jul" = "Jul")
+)
+
+selectInput(
+  "coluna",
+  label = "Selecione a Variável:",
+  choices = c("declgns" = "declgns", "pssgrs_p" = "pssgrs_p")
+)
+
+map <- reactive({
+  
+  subset(uf, emprs_s == input$companhia & ms_fctr == input$mes)
+
+})
+
+col <- reactive({
+  input$coluna
+})
+
+```
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+
+renderLeaflet({
+
+breaks <- switch( 
+   col(), 
+   "declgns" = c(1, 50, 100, 500, 1000, 5000, 10000), 
+   "pssgrs_p" = c(1000, 5000, 10000, 20000, 30000, 40000, 50000)
+) 
+
+#Primeira layer = Mapa de SP
+a <- tm_shape(map()) +
+  
+  #Utiliza as cores para montar o mapa de calor baseado na coluna V005
+  tm_fill(col = col(), title = "titulo", palette = "BuGn", breaks = breaks) +
+  
+  #Insere bordas para facilitar a visualização das áreas
+  tm_borders() +
+  
+  #Adiciona o estilo cobalt
+  tm_style("cobalt")
+  
+tmap_leaflet(a)
+
+})
+
+```
+
+
