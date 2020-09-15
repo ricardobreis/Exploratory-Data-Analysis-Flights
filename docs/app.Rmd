@@ -1,13 +1,17 @@
 ---
-title: "Untitled"
+title: "Control Tower"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    theme: cosmo
+    navbar:
+      - { title: "Source Code", href: "https://github.com/ricardobreis/Exploratory-Data-Analysis-Flights", align: right, icon: "fa-github" }
 runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
+# Carrega libs
 library(flexdashboard)
 library(tmap)
 library(sf)
@@ -18,7 +22,10 @@ library(shiny)
 uf <- st_read("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/processed/uf_aereas_shp.shp")
 ```
 
-Column {data-width=200 .sidebar}
+Mapa Interativo {data-icon="fa-globe-americas"}
+=======================================================================
+
+Column {data-width=300 .sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
@@ -37,53 +44,63 @@ selectInput(
 selectInput(
   "coluna",
   label = "Selecione a Variável:",
-  choices = c("declgns" = "declgns", "pssgrs_p" = "pssgrs_p")
+  choices = c("Decolagens" = "declgns", "Passageiros Pagos" = "pssgrs_p", "Passageiros Grátis" = "pssgrs_g")
 )
 
-map <- reactive({
+filtered_map <- reactive({
   
   subset(uf, emprs_s == input$companhia & ms_fctr == input$mes)
 
 })
 
-col <- reactive({
+selected_col <- reactive({
   input$coluna
 })
 
 ```
 
-Column {data-width=800}
+Column {data-width=700}
 -----------------------------------------------------------------------
 
-### Chart A
+### Mapa Interativo
 
 ```{r}
-
 
 renderLeaflet({
 
 breaks <- switch( 
-   col(), 
-   "declgns" = c(1, 50, 100, 500, 1000, 5000, 10000), 
-   "pssgrs_p" = c(1000, 5000, 10000, 20000, 30000, 40000, 50000)
+   selected_col(), 
+   "declgns" = c(1, 50, 100, 500, 1000, 5000, Inf), 
+   "pssgrs_p" = c(1000, 50000, 100000, 300000, 500000, 750000, Inf),
+   "pssgrs_g" = c(100, 500, 1000, 5000, 10000, 20000, Inf)
 ) 
 
-#Primeira layer = Mapa de SP
-a <- tm_shape(map()) +
+title <- switch( 
+   selected_col(), 
+   "declgns" = "Decolagens", 
+   "pssgrs_p" = "Passageiros Pagos",
+   "pssgrs_g" = "Passageiros Grátis"
+)
+
+leaflet_map <- tm_shape(filtered_map()) +
   
-  #Utiliza as cores para montar o mapa de calor baseado na coluna V005
-  tm_fill(col = col(), title = "titulo", palette = "BuGn", breaks = breaks) +
-  
-  #Insere bordas para facilitar a visualização das áreas
+  tm_fill(col = selected_col(), title = title, palette = "Blues", breaks = breaks, id = "nam_stt") +
   tm_borders() +
-  
-  #Adiciona o estilo cobalt
   tm_style("cobalt")
   
-tmap_leaflet(a)
+tmap_leaflet(leaflet_map)
 
 })
 
 ```
 
+Mapa Comparativo {data-icon="fa-map-marked-alt"}
+=======================================================================
 
+Column {data-width=300 .sidebar}
+-----------------------------------------------------------------------
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Mapa Comparativo
