@@ -115,6 +115,41 @@ Mapa Comparativo {data-icon="fa-map-marked-alt"}
 
 Column {data-width=300 .sidebar}
 -----------------------------------------------------------------------
+```{r}
+
+checkboxGroupInput(
+  "companhia_checkbox", 
+  label = "Selecione a(s) Companhia(s) Aérea(s):", 
+  choices = list("Azul" = "AZU", "Gol" = "GLO", "Latam" = "TAM"),
+  selected = c("AZU", "GLO", "TAM")
+  )
+
+hr()
+
+sliderInput(
+  "mes_slider", 
+  label = "Selecione o(s) Mês(s):", 
+  min = 1, 
+  max = 12, 
+  value = c(1, 12)
+)
+
+hr()
+
+selectInput(
+  "coluna_select",
+  label = "Selecione a Variável:",
+  choices = c("Decolagens" = "declgns", 
+              "Passageiros Pagos" = "pssgrs_p", 
+              "Passageiros Grátis" = "pssgrs_g",
+              "Carga Paga" = "crg_pg_",
+              "Carga Grátis" = "crg_gr_",
+              "ASK" = "ask",
+              "RPK" = "rpk",
+              "Assentos" = "assents")
+)
+
+```
 
 Column {data-width=700}
 -----------------------------------------------------------------------
