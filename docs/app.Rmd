@@ -17,6 +17,7 @@ library(tmap)
 library(sf)
 library(leaflet)
 library(shiny)
+library(dplyr)
 
 # Carrega o shapefile
 uf <- st_read("~/R-Projetos/Exploratory-Data-Analysis-Flights/data/processed/uf_aereas_shp.shp")
@@ -126,13 +127,12 @@ checkboxGroupInput(
 
 hr()
 
-sliderInput(
-  "mes_slider", 
+checkboxGroupInput(
+  "mes_checkbox", 
   label = "Selecione o(s) Mês(s):", 
-  min = 1, 
-  max = 7, 
-  value = c(1, 7)
-)
+  choices = list("Janeiro" = "Jan", "Fevereiro" = "Fev", "Março" = "Mar", "Abril" = "Abr", "Maio" = "Mai", "Junho" = "Jun", "Julho" = "Jul"),
+  selected = c("Jan", "Fev", "Mar")
+  )
 
 hr()
 
@@ -155,10 +155,11 @@ Column {data-width=700}
 -----------------------------------------------------------------------
 
 ```{r}
-meses <- data.frame("1" = "Jan", "2" = "Fev", "3" = "Mar", "4" = "Abr", "5" = "Mai", "6" = "Jun", "7" = "Jul")
 
 filtered_map_comparative <- reactive({
-  subset(uf, emprs_s %in% input$companhia_checkbox & ms_fctr %in% meses[seq(input$mes_slider[1]:input$mes_slider[2])])
+  subset(uf, emprs_s %in% input$companhia_checkbox & ms_fctr %in% input$mes_checkbox) %>%
+    mutate(ms_fctr  =  factor(ms_fctr, levels = input$mes_checkbox)) %>%
+    arrange(ms_fctr)  
 })
 
 selected_col_comparative <- reactive({
@@ -185,7 +186,7 @@ renderPlot({
   ) 
   
   title <- switch( 
-     selected_col(), 
+     selected_col_comparative(), 
      "declgns" = "Decolagens", 
      "pssgrs_p" = "Passageiros Pagos",
      "pssgrs_g" = "Passageiros Grátis",
