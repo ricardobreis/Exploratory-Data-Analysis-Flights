@@ -128,7 +128,7 @@ checkboxGroupInput(
   "companhia_checkbox", 
   label = "Selecione a(s) Companhia(s) Aérea(s):", 
   choices = list("Azul" = "AZU", "Gol" = "GLO", "Latam" = "TAM"),
-  selected = c("AZU", "GLO", "TAM")
+  selected = c()
   )
 
 hr()
@@ -137,7 +137,7 @@ checkboxGroupInput(
   "mes_checkbox", 
   label = "Selecione o(s) Mês(s):", 
   choices = list("Janeiro" = "Jan", "Fevereiro" = "Fev", "Março" = "Mar", "Abril" = "Abr", "Maio" = "Mai", "Junho" = "Jun", "Julho" = "Jul"),
-  selected = c("Jan", "Fev", "Mar")
+  selected = c()
   )
 
 hr()
@@ -155,6 +155,8 @@ selectInput(
               "Assentos" = "assents")
 )
 
+actionButton("visualizar","Visualizar")
+
 ```
 
 Column {data-width=700}
@@ -162,13 +164,13 @@ Column {data-width=700}
 
 ```{r}
 
-filtered_map_comparative <- reactive({
+filtered_map_comparative <- eventReactive(input$visualizar,{
   subset(uf, emprs_s %in% input$companhia_checkbox & ms_fctr %in% input$mes_checkbox) %>%
     mutate(ms_fctr  =  factor(ms_fctr, levels = input$mes_checkbox)) %>%
     arrange(ms_fctr)  
 })
 
-selected_col_comparative <- reactive({
+selected_col_comparative <- eventReactive(input$visualizar,{
   input$coluna_select
 })
 
