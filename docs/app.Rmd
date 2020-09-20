@@ -64,7 +64,13 @@ selected_col <- reactive({
   input$coluna
 })
 
+hr()
+
 ```
+
+**Nota:**
+
+Esta aplicação foi desenvolvida com o objetivo de estudo apenas. Não posso ser responsabilizado por qualquer decisão tomada com base nas informações contidas neste aplicativo, nem por seu uso por terceiros.
 
 Column {data-width=700}
 -----------------------------------------------------------------------
