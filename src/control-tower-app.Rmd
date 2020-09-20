@@ -68,9 +68,6 @@ hr()
 
 ```
 
-**Nota:**
-
-Esta aplicação foi desenvolvida com o objetivo de estudo apenas. Não posso ser responsabilizado por qualquer decisão tomada com base nas informações contidas neste aplicativo, nem por seu uso por terceiros.
 
 Column {data-width=700}
 -----------------------------------------------------------------------
@@ -155,7 +152,7 @@ selectInput(
               "Assentos" = "assents")
 )
 
-actionButton("visualizar","Visualizar")
+actionButton("visualizar","Visualizar", class = "btn-primary")
 
 ```
 
@@ -215,3 +212,24 @@ renderPlot({
   
 })
 ```
+
+Sobre {data-icon="fa-info-circle"}
+=======================================================================
+
+Column {data-width=1000}
+-----------------------------------------------------------------------
+
+### Sobre
+
+Esta aplicação foi desenvolvida com dados de oferta e demanda do mercado doméstico de aviação no ano de 2020, para as empresas Azul, Gol e Latam.
+
+**Nota:**
+
+Esta aplicação foi desenvolvida com o objetivo de estudo apenas. Não posso ser responsabilizado por qualquer decisão tomada com base nas informações contidas neste aplicativo, nem por seu uso por terceiros.
+
+**Referências:**
+
+- https://www.anac.gov.br/assuntos/dados-e-estatisticas/dados-estatisticos/dados-estatisticos
+- https://geocompr.robinlovelace.net/
+- https://bookdown.org/yihui/blogdown/
+- https://ipeagit.github.io/geobr/
