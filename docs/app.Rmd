@@ -201,7 +201,7 @@ renderPlot({
     tm_fill(palette = "Blues", col = selected_col_comparative(), title = title, breaks = breaks) +
     tm_borders(alpha = 0.2) +
     tm_facets(by = c("emprs_s", "ms_fctr"), free.coords = FALSE) +
-    tm_layout(legend.title.size = 1.1)
+    tm_layout(legend.title.size = 1.4, legend.text.size = 1.1, frame = "#efefef", panel.label.size = 1.5, panel.label.bg.color = "#efefef")
   
   facets_map
   
